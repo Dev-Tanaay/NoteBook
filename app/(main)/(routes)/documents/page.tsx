@@ -22,7 +22,7 @@ function DocumentPage() {
     return (
         <div className="h-full flex flex-col items-center justify-center space-y-4">
             <h1 className="text-lg font-medium">
-                Welcome to {user?.username||user?.firstName}'s NoteBook
+                Welcome {user?.username||user?.firstName} to <span className='text-green-400 font-semibold text-2xl'>NoteBook</span>
             </h1>
             <Button onClick={onCreate} className='animate-pulse shadow-green-400 shadow-lg'>
                 Create your<span className='text-green-400'>Note's</span>
