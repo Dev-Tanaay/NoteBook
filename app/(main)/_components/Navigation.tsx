@@ -12,10 +12,14 @@ import { toast } from 'sonner';
 import DocumentList from './DocumentList';
 import { Popover,PopoverTrigger,PopoverContent } from '@/components/ui/popover';
 import TrashBox from './TrashBox';
+import UseSearch from '@/hooks/useSearch';
+import { useSetting } from '@/hooks/useSetting';
 
 
 
 function Navigation() {
+    const settings=useSetting();
+    const search=UseSearch();
     const pathname = usePathname();
     const isMobile = useIsMobile();
     const create = useMutation(api.documents.create);
@@ -122,8 +126,8 @@ function Navigation() {
                 </div>
                 <div>
                     <UserItem />
-                    <Item label='Search' icon={Search} isSearch onClick={()=>{}}  />
-                    <Item label='Settings' icon={Settings}  onClick={()=>{}}  />
+                    <Item label='Search' icon={Search} isSearch onClick={search.onOpen}  />
+                    <Item label='Settings' icon={Settings}  onClick={settings.onOpen}  />
                     <Item onClick={handleCreate} label="New Page" icon={PlusCircle} />
                 </div>
                 <div className="mt-4">
