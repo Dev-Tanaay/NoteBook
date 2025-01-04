@@ -2,7 +2,7 @@
 import useIsMobile from '@/hooks/useIsMobile';
 import { cn } from '@/lib/utils';
 import { ChevronsLeft, MenuIcon, Plus, PlusCircle, Search, Settings, Trash } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 import UserItem from './UserItem';
 import { useMutation } from 'convex/react';
@@ -10,16 +10,18 @@ import { api } from "@/convex/_generated/api";
 import Item from './Item';
 import { toast } from 'sonner';
 import DocumentList from './DocumentList';
-import { Popover,PopoverTrigger,PopoverContent } from '@/components/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import TrashBox from './TrashBox';
 import UseSearch from '@/hooks/useSearch';
 import { useSetting } from '@/hooks/useSetting';
+import NavBar from './NavBar';
 
 
 
 function Navigation() {
-    const settings=useSetting();
-    const search=UseSearch();
+    const settings = useSetting();
+    const search = UseSearch();
+    const params = useParams();
     const pathname = usePathname();
     const isMobile = useIsMobile();
     const create = useMutation(api.documents.create);
@@ -28,7 +30,7 @@ function Navigation() {
     const navBarRef = useRef<HTMLElement>(null)
     const [isResetting, setIsResetting] = useState(false);
     const [isCollapsed, setIsCollapased] = useState(isMobile);
-    
+
     const handleMouseDown = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>
     ) => {
@@ -98,7 +100,7 @@ function Navigation() {
         }
     }, [pathname, isMobile]);
 
-    
+
     const handleCreate = () => {
         const promise = create({ title: "Untitled" });
         toast.promise(promise, {
@@ -107,6 +109,7 @@ function Navigation() {
             error: "Failed to create a new note"
         })
     }
+
 
     return (
         <>
@@ -126,18 +129,18 @@ function Navigation() {
                 </div>
                 <div>
                     <UserItem />
-                    <Item label='Search' icon={Search} isSearch onClick={search.onOpen}  />
-                    <Item label='Settings' icon={Settings}  onClick={settings.onOpen}  />
+                    <Item label='Search' icon={Search} isSearch onClick={search.onOpen} />
+                    <Item label='Settings' icon={Settings} onClick={settings.onOpen} />
                     <Item onClick={handleCreate} label="New Page" icon={PlusCircle} />
                 </div>
                 <div className="mt-4">
                     <DocumentList />
-                    <Item onClick={handleCreate} icon={Plus} label='Add Page'/>
+                    <Item onClick={handleCreate} icon={Plus} label='Add Page' />
                     <Popover>
-                      <PopoverTrigger className='w-full mt-4'>
-                        <Item label='Trash' icon={Trash} />
-                        </PopoverTrigger>  
-                        <PopoverContent className='p-0 w-72' side={isMobile?"bottom":"right"}>
+                        <PopoverTrigger className='w-full mt-4'>
+                            <Item label='Trash' icon={Trash} />
+                        </PopoverTrigger>
+                        <PopoverContent className='p-0 w-72' side={isMobile ? "bottom" : "right"}>
                             <TrashBox />
                         </PopoverContent>
 
@@ -157,9 +160,20 @@ function Navigation() {
                     isMobile && "left-0 w-full"
                 )}
             >
-                <nav className='bg-transparent px-3 py-2 w-full'>
-                    {isCollapsed && <MenuIcon role='button' onClick={resetWidth} className='h-6 w-6 text-muted-foreground' />}
-                </nav>
+                {!!params.id ? (
+                    <NavBar isCollapsed={isCollapsed} onResetWidth={resetWidth} />
+                ) : (
+                    <nav className="bg-transparent px-3 py-2 w-full">
+                        {isCollapsed && (
+                            <MenuIcon
+                                onClick={resetWidth}
+                                role="button"
+                                className="w-6 h-6 text-muted-foreground"
+                            />
+                        )}
+                    </nav>
+                )}
+
             </div>
         </>
     )
