@@ -193,10 +193,10 @@ export const getSearch = query({
 })
 
 export const getById = query({
-    args: { documentId: v.id("documents") }, 
+    args: { documentId: v.id("documents") },
     handler: async (ctx, args) => {
-        const document = await ctx.db.get(args.documentId); 
-        if (!document) throw new Error("Document not found"); 
+        const document = await ctx.db.get(args.documentId);
+        if (!document) throw new Error("Document not found");
         return document;
     },
 });
@@ -224,7 +224,50 @@ export const update = mutation({
         if (existingDocument.userId !== userId) {
             throw new Error("Not authorized");
         }
-        const document = await ctx.db.patch(args.id,rest);
+        const document = await ctx.db.patch(args.id, rest);
         return document;
+    }
+})
+
+
+export const removeIcon = mutation({
+    args: { id: v.id("documents") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not authenticated");
+        }
+        const userId = identity.subject;
+        const existingDocument = await ctx.db.get(args.id);
+        if (!existingDocument) {
+            throw new Error("Notes not found");
+        }
+        if (existingDocument.userId !== userId) {
+            throw new Error("Not authorized");
+        }
+        const document = await ctx.db.patch(args.id, { icon: undefined });
+        return document;
+
+    }
+})
+
+export const removeCoverImage = mutation({
+    args: { id: v.id("documents") },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Not authenticated");
+        }
+        const userId = identity.subject;
+        const existingDocument = await ctx.db.get(args.id);
+        if (!existingDocument) {
+            throw new Error("Notes not found");
+        }
+        if (existingDocument.userId !== userId) {
+            throw new Error("Not authorized");
+        }
+        const document = await ctx.db.patch(args.id, { coverImage: undefined });
+        return document;
+
     }
 })
